@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VHG — Gourmet Cocoa</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Josefin+Sans:wght@100;300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cacao:#2C1A0E; --espresso:#1A0D05; --caramel:#C8843A;
+    --gold:#D4A853; --cream:#F5EDD8; --mist:#EDE3CE;
+  }
+  
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--espresso);color:var(--cream);font-family:'Cormorant Garamond',serif;overflow-x:hidden;cursor:none}
+
+  .cursor{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference}
+  .cursor-ring{width:34px;height:34px;border:1.5px solid var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .1s,top .1s;opacity:.5}
+
+  nav{position:fixed;top:0;left:0;right:0;z-index:500;padding:1.8rem 3rem;display:flex;align-items:center;justify-content:space-between;transition:background .5s,padding .4s}
+  nav.scrolled{background:rgba(26,13,5,.95);backdrop-filter:blur(16px);padding:1.1rem 3rem;border-bottom:1px solid rgba(212,168,83,.12)}
+  .nav-logo{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--gold);text-decoration:none;letter-spacing:.06em}
+  .nav-links{display:flex;gap:2.5rem;list-style:none}
+  .nav-links a{font-family:'Josefin Sans',sans-serif;font-weight:300;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--mist);text-decoration:none;opacity:.7;transition:opacity .3s,color .3s}
+  .nav-links a:hover{opacity:1;color:var(--gold)}
+
+  /* HERO */
+  .hero{height:100vh;min-height:700px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 60%,#3D1A08,var(--espresso) 70%)}
+  .hero-img-wrap{position:absolute;inset:0;overflow:hidden}
+  .hero-img-wrap img{width:100%;height:100%;object-fit:cover;opacity:.35;filter:sepia(40%) saturate(.8);transform:scale(1.08)}
+  .hero-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 30%,var(--espresso) 100%)}
+  .hero-content{position:relative;z-index:10;text-align:center;padding:0 2rem;animation:fadeUp 1.6s ease both}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+  .hero-eyebrow{font-family:'Josefin Sans',sans-serif;font-weight:100;letter-spacing:.5em;font-size:.7rem;color:var(--gold);text-transform:uppercase;margin-bottom:1.5rem;opacity:.85}
+  .hero-title{font-family:'Playfair Display',serif;font-size:clamp(4.5rem,12vw,10rem);font-weight:900;line-height:.88;color:var(--cream);margin-bottom:2rem}
+  .hero-title em{font-style:italic;color:var(--caramel);display:block}
+  .hero-subtitle{font-size:1.25rem;font-weight:300;font-style:italic;color:var(--mist);max-width:480px;margin:0 auto 3rem;line-height:1.6}
+  .hero-cta{display:inline-block;font-family:'Josefin Sans',sans-serif;font-weight:300;letter-spacing:.35em;font-size:.72rem;text-transform:uppercase;color:var(--espresso);background:var(--gold);padding:1.1rem 2.8rem;text-decoration:none;transition:all .4s}
+  .hero-cta:hover{background:var(--caramel);letter-spacing:.5em}
+  .hero-scroll{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;font-family:'Josefin Sans',sans-serif;font-weight:100;font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);opacity:.6}
+  .scroll-line{width:1px;height:50px;background:linear-gradient(to bottom,var(--gold),transparent);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:.6;transform:scaleY(1)}50%{opacity:.2;transform:scaleY(.6)}}
+
+  /* SECTION COMMONS */
+  section{position:relative}
+  .section-label{font-family:'Josefin Sans',sans-serif;font-weight:100;font-size:.62rem;letter-spacing:.55em;text-transform:uppercase;color:var(--gold);opacity:.7;margin-bottom:1.2rem}
+  .section-title{font-family:'Playfair Display',serif;font-size:clamp(2.4rem,5vw,4.2rem);font-weight:700;line-height:1.08;color:var(--cream)}
+  .section-title em{font-style:italic;color:var(--caramel)}
+  .divider{width:60px;height:1px;background:var(--gold);margin:1.8rem 0;opacity:.5}
+
+  /* ABOUT */
+  .about{padding:10rem 6vw;background:var(--cacao);display:grid;grid-template-columns:1fr 1fr;gap:8vw;align-items:center}
+  .about-text p{font-size:1.15rem;font-weight:300;line-height:1.9;color:var(--mist);margin-bottom:1.4rem}
+  .about-text p strong{font-weight:500;color:var(--cream);font-style:italic}
+  .about-img-wrap{position:relative}
+  .about-img-wrap::before{content:'';position:absolute;top:-20px;right:-20px;width:calc(100% - 40px);height:calc(100% - 40px);border:1px solid rgba(212,168,83,.25);pointer-events:none}
+
+  /* UPLOAD PLACEHOLDERS */
+  .upload-ph{background:rgba(255,255,255,.04);border:2px dashed rgba(212,168,83,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;color:rgba(212,168,83,.4);font-family:'Josefin Sans',sans-serif;font-weight:100;font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+  .upload-ph:hover{border-color:rgba(212,168,83,.55);background:rgba(255,255,255,.07)}
+  .upload-ph svg{opacity:.35}
+  .upload-ph input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+
+  /* ═══════════════════════════════════
+     BROCHURE — SMOOTH TWO-PAGE SPREAD
+  ═══════════════════════════════════ */
+  .brochure{padding:8rem 0 6rem;background:var(--espresso)}
+  .brochure-header{text-align:center;margin-bottom:4rem;padding:0 6vw}
+  .brochure-header .section-title{font-size:clamp(2rem,4vw,3.4rem)}
+  .brochure-header .divider{margin:1.8rem auto}
+
+  .book-scene{display:flex;align-items:center;justify-content:center;position:relative;padding:0 5vw 3rem}
+  .book-scene::after{content:'';position:absolute;bottom:.3rem;left:50%;transform:translateX(-50%);width:min(760px,90vw);height:48px;background:radial-gradient(ellipse,rgba(212,168,83,.13) 0%,transparent 70%);pointer-events:none}
+
+  /* UPDATED HEIGHTS FOR TALL IMAGES */
+  .book-frame{
+    position:relative;
+    width:min(860px,92vw);
+    height:min(800px, 110vw);
+    min-height:400px;
+    display:flex;
+    box-shadow:-10px 4px 32px rgba(0,0,0,.65),10px 4px 32px rgba(0,0,0,.65),0 24px 60px rgba(0,0,0,.5);
+    border:1px solid rgba(212,168,83,.08);
+    overflow:hidden;
+  }
+
+  /* spine */
+  .spine{position:absolute;left:50%;top:0;bottom:0;width:4px;transform:translateX(-50%);background:linear-gradient(to bottom,rgba(0,0,0,.75),rgba(0,0,0,.35) 50%,rgba(0,0,0,.75));z-index:20;pointer-events:none}
+  /* page-edge shadows */
+  .shadow-l{position:absolute;left:0;top:0;bottom:0;width:50%;box-shadow:inset -22px 0 30px rgba(0,0,0,.22);z-index:15;pointer-events:none}
+  .shadow-r{position:absolute;right:0;top:0;bottom:0;width:50%;box-shadow:inset 22px 0 30px rgba(0,0,0,.22);z-index:15;pointer-events:none}
+
+  .page-l,.page-r{position:absolute;top:0;bottom:0;width:50%;background:var(--espresso);overflow:hidden}
+  .page-l{left:0}.page-r{right:0}
+
+  /* slides */
+  .sl{position:absolute;inset:0;opacity:0;transition:opacity .55s ease;pointer-events:none}
+  .sl.on{opacity:1;pointer-events:all}
+
+  /* UPDATED OBJECT-FIT FOR TALL IMAGES */
+  .sl img{width:100%;height:100%;object-fit:contain;display:block;background:var(--cacao);}
+
+  /* upload zone inside slide */
+  .sl-ph{width:100%;height:100%;background:rgba(30,14,4,.6);border:2px dashed rgba(212,168,83,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.65rem;color:rgba(212,168,83,.32);font-family:'Josefin Sans',sans-serif;font-size:.58rem;font-weight:300;letter-spacing:.28em;text-transform:uppercase;cursor:pointer;position:relative;transition:all .3s}
+  .sl-ph:hover{background:rgba(30,14,4,.8);border-color:rgba(212,168,83,.4);color:rgba(212,168,83,.6)}
+  .sl-ph svg{width:28px;height:28px;opacity:.35}
+  .sl-ph input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+
+  /* arrows */
+  .arr{position:absolute;top:50%;transform:translateY(-50%);z-index:25;background:rgba(15,7,2,.82);border:1px solid rgba(212,168,83,.28);color:var(--gold);width:42px;height:42px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;backdrop-filter:blur(6px);border-radius:50%}
+  .arr:hover{background:rgba(212,168,83,.14);border-color:var(--gold)}
+  .arr:disabled{opacity:.16;pointer-events:none}
+  .arr.prev{left:20px}.arr.next{right:20px}
+  .arr svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+  .book-dots{display:flex;justify-content:center;gap:.55rem;margin-top:2rem}
+  .dot{width:6px;height:6px;border-radius:50%;background:rgba(212,168,83,.22);cursor:pointer;border:none;padding:0;transition:all .3s}
+  .dot.on{background:var(--gold);transform:scale(1.35)}
+  .book-hint{text-align:center;font-family:'Josefin Sans',sans-serif;font-size:.56rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);opacity:.3;margin-top:1rem}
+
+  /* MISSION */
+  .mission{padding:10rem 6vw;background:var(--cacao);display:grid;grid-template-columns:1fr 1fr;gap:8vw;align-items:center}
+  .mission-img-wrap{position:relative}
+  .mission-badge{position:absolute;bottom:-2rem;right:-2rem;width:120px;height:120px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:1rem}
+  .mission-badge span:first-child{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--espresso);line-height:1}
+  .mission-badge span:last-child{font-family:'Josefin Sans',sans-serif;font-size:.5rem;font-weight:300;letter-spacing:.15em;text-transform:uppercase;color:var(--espresso);opacity:.7;margin-top:.2rem}
+  .mission-text p{font-size:1.1rem;font-weight:300;line-height:1.9;color:var(--mist);margin-bottom:1.2rem}
+  .mission-text p strong{font-weight:500;color:var(--cream);font-style:italic}
+  .mission-values{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2.5rem}
+  .value-item{padding:1.5rem;border:1px solid rgba(212,168,83,.15);transition:border-color .3s,background .3s}
+  .value-item:hover{border-color:rgba(212,168,83,.4);background:rgba(212,168,83,.04)}
+  .value-icon{font-size:1.4rem;margin-bottom:.6rem}
+  .value-item h4{font-family:'Playfair Display',serif;font-size:1rem;color:var(--caramel);margin-bottom:.4rem}
+  .value-item p{font-size:.85rem;color:var(--mist);opacity:.75;line-height:1.6}
+
+  /* STATS */
+  .stats{background:var(--gold);padding:5rem 6vw;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;text-align:center}
+  .stat-number{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:900;color:var(--espresso);line-height:1}
+  .stat-label{font-family:'Josefin Sans',sans-serif;font-weight:300;font-size:.65rem;letter-spacing:.35em;text-transform:uppercase;color:var(--espresso);opacity:.65;margin-top:.5rem}
+
+  /* ORIGINS */
+  .origins{padding:10rem 6vw;background:var(--espresso);text-align:center}
+  .origins-lead{font-size:1.2rem;font-style:italic;font-weight:300;color:var(--mist);max-width:680px;margin:0 auto 5rem;line-height:1.8}
+  .origins-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+  .origin-card{overflow:hidden;transition:transform .4s}
+  .origin-card:hover{transform:translateY(-8px)}
+  .origin-card > img{width:100%;height:240px;object-fit:cover;display:block}
+  .origin-card-body{padding:1.8rem 1.5rem;background:var(--cacao);border:1px solid rgba(212,168,83,.1);border-top:2px solid var(--caramel)}
+  .origin-card-body h3{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--cream);margin-bottom:.6rem}
+  .origin-card-body p{font-size:.9rem;color:var(--mist);opacity:.75;line-height:1.7}
+
+  /* FOOTER */
+  footer{background:#0E0703;padding:5rem 6vw 3rem;border-top:1px solid rgba(212,168,83,.12)}
+  .footer-inner{display:grid;grid-template-columns:2fr 1fr 1fr;gap:4rem;margin-bottom:4rem}
+  .footer-brand .nav-logo{font-size:2rem;display:block;margin-bottom:1rem}
+  .footer-brand p{font-size:.95rem;color:var(--mist);opacity:.6;line-height:1.8;max-width:280px}
+  .footer-col h4{font-family:'Josefin Sans',sans-serif;font-weight:300;font-size:.62rem;letter-spacing:.45em;text-transform:uppercase;color:var(--gold);opacity:.7;margin-bottom:1.4rem}
+  .footer-col a,.footer-col p{display:block;font-size:.92rem;color:var(--mist);opacity:.55;text-decoration:none;margin-bottom:.7rem;font-weight:300;transition:opacity .3s}
+  .footer-col a:hover{opacity:.9}
+  .footer-bottom{border-top:1px solid rgba(212,168,83,.1);padding-top:2rem;display:flex;justify-content:space-between}
+  .footer-bottom p{font-family:'Josefin Sans',sans-serif;font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--mist);opacity:.3}
+
+  /* REVEAL */
+  .reveal{opacity:0;transform:translateY(50px);transition:opacity .9s ease,transform .9s ease}
+  .reveal.visible{opacity:1;transform:translateY(0)}
+  .d1{transition-delay:.12s}.d2{transition-delay:.24s}.d3{transition-delay:.36s}
+
+  @media(max-width:900px){
+    .about,.mission{grid-template-columns:1fr;gap:4rem}
+    .origins-strip{grid-template-columns:1fr}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .footer-inner{grid-template-columns:1fr;gap:2.5rem}
+    nav{padding:1.4rem 1.5rem}
+    .nav-links{gap:1.4rem}
+    .about,.mission,.origins{padding:6rem 5vw}
+    .book-frame{height:min(600px, 120vw)} /* UPDATED HEIGHT FOR MOBILE */
+  }
+  @media(max-width:600px){
+    .mission-values{grid-template-columns:1fr}
+    .stats{grid-template-columns:1fr 1fr}
+    .nav-links{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cring"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">VHG</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#mission">Mission</a></li>
+    <li><a href="#origins">Origins</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-img-wrap">
+    <img id="heroImg" src="" alt="" onerror="this.style.display='none'">
+  </div>
+  <div class="hero-vignette"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Gourmet Cocoa · Est. Philippines</p>
+    <h1 class="hero-title">VHG<em>Cocoa</em></h1>
+    <p class="hero-subtitle">From bean to cup — partnering with local farmers to bring you gourmet cocoa of extraordinary depth.</p>
+    <a href="#gallery" class="hero-cta">Discover Our Story</a>
+  </div>
+  <div class="hero-scroll"><div class="scroll-line"></div>Scroll</div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-text reveal">
+    <p class="section-label">Who We Are</p>
+    <h2 class="section-title">Rooted in <em>Community</em></h2>
+    <div class="divider"></div>
+    <p>VHG is deeply committed to both <strong>local communities and exceptional quality</strong>. We believe that the finest cocoa begins long before it reaches your cup — it starts with relationships built on trust, respect, and a shared love of the land.</p>
+    <p>By partnering directly with local cacao farmers, we secure the finest high-grade beans from the source. Every harvest tells a story of dedication, tradition, and sustainable stewardship.</p>
+    <p>Our gourmet cocoa is more than a beverage — it's a promise that every sip you take <strong>supports a sustainable future</strong> for farming families.</p>
+  </div>
+  <div class="about-img-wrap reveal d2">
+    <div class="upload-ph" style="height:480px; display:none;">
+      <svg width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+      Click to upload image
+      <input type="file" accept="image/*" onchange="uploadImg(this,'aboutImg',this.closest('.upload-ph'))">
+    </div>
+    <img id="aboutImg" src="farm.jpg" alt="Cacao Farm" style="display:block;width:100%;height:480px;object-fit:cover">
+  </div>
+</section>
+
+<!-- ═══ BROCHURE ═══ -->
+<section class="brochure" id="gallery">
+  <div class="brochure-header reveal">
+    <p class="section-label">The Collection</p>
+    <h2 class="section-title">Our <em>Brochure</em></h2>
+    <div class="divider"></div>
+    <p style="font-size:1.05rem;color:var(--mist);opacity:.7;font-style:italic;max-width:480px;margin:0 auto">Flip through our story — from cacao farm to your cup.</p>
+  </div>
+
+  <div class="book-scene">
+    <div class="book-frame" id="bf">
+
+      <!-- decorative overlays -->
+      <div class="spine"></div>
+      <div class="shadow-l"></div>
+      <div class="shadow-r"></div>
+
+      <!-- LEFT PAGE: slides 0,1,2 -->
+      <div class="page-l">
+        <div class="sl on" id="L0">
+          <div class="sl-ph" id="LP0" style="display:none">
+            <input type="file" accept="image/*" onchange="uploadSlide(this,'LI0','LP0')">
+          </div>
+          <!-- PRE-FILLED WITH 1.png -->
+          <img id="LI0" src="1.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain">
+        </div>
+        <div class="sl" id="L1">
+          <div class="sl-ph" id="LP1" style="display:none">
+            <input type="file" accept="image/*" onchange="uploadSlide(this,'LI1','LP1')">
+          </div>
+          <!-- PRE-FILLED WITH 3.png -->
+          <img id="LI1" src="3.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain">
+        </div>
+        <div class="sl" id="L2">
+          <div class="sl-ph" id="LP2" style="display:none">
+            <input type="file" accept="image/*" onchange="uploadSlide(this,'LI2','LP2')">
+          </div>
+          <!-- PRE-FILLED WITH 5.png -->
+          <img id="LI2" src="5.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain">
+        </div>
+      </div>
+
+      <!-- RIGHT PAGE: slides 0,1,2 -->
+      <div class="page-r">
+        <div class="sl on" id="R0">
+          <div class="sl-ph" id="RP0" style="display:none">
+            <input type="file" accept="image/*" onchange="uploadSlide(this,'RI0','RP0')">
+          </div>
+          <!-- PRE-FILLED WITH 2.png -->
+          <img id="RI0" src="2.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain">
+        </div>
+        <div class="sl" id="R1">
+          <div class="sl-ph" id="RP1" style="display:none">
+            <input type="file" accept="image/*" onchange="uploadSlide(this,'RI1','RP1')">
+          </div>
+          <!-- PRE-FILLED WITH 4.png -->
+          <img id="RI1" src="4.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain">
+        </div>
+        <div class="sl" id="R2">
+          <div class="sl-ph" id="RP2" style="display:none">
+            <input type="file" accept="image/*" onchange="uploadSlide(this,'RI2','RP2')">
+          </div>
+          <!-- PRE-FILLED WITH 6.png -->
+          <img id="RI2" src="6.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain">
+        </div>
+      </div>
+
+      <!-- Arrows -->
+      <button class="arr prev" id="aPrev" onclick="turn(-1)" disabled>
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="arr next" id="aNext" onclick="turn(1)">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+    </div>
+  </div>
+
+  <div class="book-dots">
+    <button class="dot on"  onclick="goto(0)"></button>
+    <button class="dot"     onclick="goto(1)"></button>
+    <button class="dot"     onclick="goto(2)"></button>
+  </div>
+  <p class="book-hint">Use arrows or dots to flip</p>
+</section>
+
+<!-- MISSION -->
+<section class="mission" id="mission">
+  <div class="mission-img-wrap reveal">
+    
+    <img id="missionImg" src="Sustain.jpg" alt="" style="display:block;width:100%;height:560px;object-fit:cover">
+    <div class="mission-badge"><span>100%</span><span>Local Farmers</span></div>
+  </div>
+  <div class="mission-text reveal d1">
+    <p class="section-label">Our Mission</p>
+    <h2 class="section-title">Sustaining <em>Futures</em></h2>
+    <div class="divider"></div>
+    <p>We don't just source cacao — we invest in the people who grow it. Our direct partnerships mean fair compensation, long-term relationships, and a shared commitment to excellence.</p>
+    <p style="font-style:italic;opacity:.8">When you choose VHG, you choose to support an entire ecosystem of farmers, families, and communities.</p>
+    <div class="mission-values">
+      <div class="value-item"><div class="value-icon">🌱</div><h4>Sustainability</h4><p>Eco-conscious farming practices passed down through generations.</p></div>
+      <div class="value-item"><div class="value-icon">🤝</div><h4>Community</h4><p>Direct partnerships that uplift local farmers and families.</p></div>
+      <div class="value-item"><div class="value-icon">✦</div><h4>Quality</h4><p>Only the finest high-grade beans make it into every batch.</p></div>
+      <div class="value-item"><div class="value-icon">☕</div><h4>Craftsmanship</h4><p>Gourmet cocoa rooted in tradition, refined for today.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="reveal"><div class="stat-number">100+</div><div class="stat-label">Partner Farmers</div></div>
+  <div class="reveal d1"><div class="stat-number">100%</div><div class="stat-label">Locally Sourced</div></div>
+  <div class="reveal d2"><div class="stat-number">Grade A</div><div class="stat-label">Cacao Beans</div></div>
+  <div class="reveal d3"><div class="stat-number">Pure</div><div class="stat-label">Gourmet Quality</div></div>
+</div>
+
+<!-- ORIGINS -->
+<section class="origins" id="origins">
+  <p class="section-label reveal">The Story of Our Beans</p>
+  <h2 class="section-title reveal">From <em>Origin</em> to Cup</h2>
+  <div class="divider reveal" style="margin:1.8rem auto"></div>
+  <p class="origins-lead reveal">Every cacao pod carries the soul of the land it grew on. Discover the journey from harvest to your hands.</p>
+  <div class="origins-strip">
+    <div class="origin-card reveal">
+      <img src="Harvest.jpg" alt="The Harvest">
+      <div class="origin-card-body">
+        <h3>The Harvest</h3>
+        <p>Hand-picked at peak ripeness by our partner farmers, each pod selected with care and expertise.</p>
+      </div>
+    </div>
+    <div class="origin-card reveal d1">
+      <img src="fermentation.webp" alt="The Fermentation">
+      <div class="origin-card-body">
+        <h3>The Fermentation</h3>
+        <p>Naturally fermented under the tropical sun, unlocking the complex flavors that define VHG cocoa.</p>
+      </div>
+    </div>
+    <div class="origin-card reveal d2">
+      <img src="craft.jpg" alt="The Craft">
+      <div class="origin-card-body">
+        <h3>The Craft</h3>
+        <p>Carefully processed into the gourmet cocoa you love — rich, pure, and full of character.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#" class="nav-logo">VHG</a>
+      <p>Committed to local communities, extraordinary quality, and a sustainable future — one cup at a time.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigate</h4>
+      <a href="#about">About VHG</a><a href="#gallery">Gallery</a><a href="#mission">Our Mission</a><a href="#origins">Origins</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <p>info@vhgcocoa.com</p><p>Philippines</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 VHG Gourmet Cocoa. All rights reserved.</p>
+    <p>Crafted with care · Sourced with purpose</p>
+  </div>
+</footer>
+
+<script>
+/* CURSOR */
+const cur=document.getElementById('cursor'),ring=document.getElementById('cring');
+document.addEventListener('mousemove',e=>{
+  cur.style.cssText =`left:${e.clientX}px;top:${e.clientY}px`;
+  ring.style.cssText=`left:${e.clientX}px;top:${e.clientY}px`;
+});
+
+/* NAV */
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>80));
+
+/* REVEAL */
+new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.1})
+  .observe(...[...document.querySelectorAll('.reveal')]);
+// proper forEach
+document.querySelectorAll('.reveal').forEach(el=>{
+  new IntersectionObserver(([e])=>{if(e.isIntersecting)el.classList.add('visible')},{threshold:.1}).observe(el);
+});
+
+/* GENERIC UPLOAD */
+function uploadImg(input,imgId,ph){
+  if(!input.files[0])return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const img=document.getElementById(imgId);
+    img.src=e.target.result; img.style.display='block';
+    if(ph)ph.style.display='none';
+  };
+  r.readAsDataURL(input.files[0]);
+}
+
+/* BROCHURE */
+let cur_=0;
+const N=3;
+
+function goto(n){
+  if(n===cur_)return;
+  // fade out
+  document.getElementById('L'+cur_).classList.remove('on');
+  document.getElementById('R'+cur_).classList.remove('on');
+  cur_=n;
+  // fade in
+  document.getElementById('L'+cur_).classList.add('on');
+  document.getElementById('R'+cur_).classList.add('on');
+  // dots
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===cur_));
+  // arrows
+  document.getElementById('aPrev').disabled=cur_===0;
+  document.getElementById('aNext').disabled=cur_===N-1;
+}
+
+function turn(d){goto(Math.max(0,Math.min(N-1,cur_+d)));}
+
+function uploadSlide(input,imgId,phId){
+  if(!input.files[0])return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const img=document.getElementById(imgId);
+    img.src=e.target.result; img.style.display='block';
+    document.getElementById(phId).style.display='none';
+  };
+  r.readAsDataURL(input.files[0]);
+}
+
+/* PARALLAX */
+window.addEventListener('scroll',()=>{
+  const img=document.querySelector('.hero-img-wrap img');
+  if(img)img.style.transform=`scale(1.08) translateY(${scrollY*.14}px)`;
+});
+</script>
+</body>
+</html>
